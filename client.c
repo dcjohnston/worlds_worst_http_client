@@ -5,8 +5,9 @@
 #include <netdb.h>
 #include <string.h>
 #include <arpa/inet.h>
-#include <fcntl.h> // for open
 #include <unistd.h> // for close
+#include <time.h>
+
 
 #define MAX_BUFF_SIZE 5096
 
@@ -70,13 +71,17 @@ int prepare_connection(char *host) {
 }
 
 int main(int argc, char** argv){
-  if (argc != 3) {
-    printf("Usage: client <host> <path> <method>\n");
-    exit(1);
+  char host[1024];
+  while (1) {
+    printf("Enter a hostname: ");
+    if (scanf("%s", host) <= 0) {
+      printf("Usage: \n> <hostname>");
+      exit(1);
+    }
+    int sock = prepare_connection(host);
+    send_http_request(sock);
+    receive_http_response(sock);
+    close(sock);
   }
-  int sock = prepare_connection(argv[1]);
-  send_http_request(sock);
-  receive_http_response(sock);
-  close(sock);
   return 0;
 }
